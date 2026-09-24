@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreshBite India — Authentic Gourmet Food Ordering & 25-Min Delivery</title>
+  <meta name="description" content="Order authentic Indian cuisines: Hyderabadi Dum Biryani, Butter Chicken, Dal Makhani, Ghee Dosa, and Royal Kebabs delivered piping hot with live tracking.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ==================== TOP NAVIGATION ==================== -->
+  <header class="navbar">
+    <div class="container nav-container">
+      
+      <!-- Brand Logo -->
+      <div class="brand-logo" onclick="FreshBite.navigate('home')">
+        <div class="brand-icon">🍛</div>
+        <span>Fresh<span class="bite">Bite</span> <span style="font-size:0.85rem;color:var(--primary);font-weight:700;">INDIA</span></span>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-links">
+        <button class="nav-link active" data-view="home" onclick="FreshBite.navigate('home')">Home</button>
+        <button class="nav-link" data-view="restaurants" onclick="FreshBite.navigate('restaurants')">Restaurants</button>
+        <button class="nav-link" data-view="menu" onclick="FreshBite.navigate('menu')">Food Menu</button>
+        <button class="nav-link" data-view="about" onclick="FreshBite.navigate('about')">About Us</button>
+        <button class="nav-link" data-view="contact" onclick="FreshBite.navigate('contact')">Contact Us</button>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <!-- Wishlist Button -->
+        <button class="action-btn" title="Saved Wishlist" onclick="FreshBite.openAccount('wishlist')">
+          <span>❤️</span>
+          <span class="wishlist-count-badge badge-count" style="display:none;">0</span>
+        </button>
+
+        <!-- FreshCredits Wallet Button (Play Store style) -->
+        <button class="action-btn" title="FreshCredits Wallet & Rewards" onclick="FreshBite.openAccount('credits')" style="display:flex;align-items:center;gap:0.35rem;border-color:#F59E0B;background:#FFFBEB;">
+          <span style="font-size:1.1rem;">🪙</span>
+          <span id="navCreditsCount" style="font-weight:800;color:#B45309;font-size:0.85rem;">250 pts</span>
+        </button>
+
+        <!-- Cart Button -->
+        <button id="navCartBtn" class="action-btn btn-primary" title="Shopping Cart" onclick="FreshBite.openCart()">
+          <span>🛒</span>
+          <span>Cart</span>
+          <span class="cart-count-badge badge-count" style="display:none;">0</span>
+        </button>
+
+        <!-- User Account Button -->
+        <button class="action-btn" title="User Account" onclick="FreshBite.openAccount('profile')">
+          <span>👤</span>
+          <span>Priya</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT (10 VIEWS) ==================== -->
+  <main class="container">
+
+    <!-- 1. HOME VIEW -->
+    <section id="view-home" class="view-section active">
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <div>
+          <span class="hero-badge">⚡ Lightning Fast 25-Min Hot Delivery across India</span>
+          <h1 class="hero-title">Authentic Indian Flavors, <span>Delivered Hot</span>.</h1>
+          <p class="hero-desc">Savor royal Hyderabadi dum biryani, silky butter chicken, 24-hour slow-cooked dal makhani, and crispy ghee roast dosas crafted by master chefs.</p>
+          <div class="hero-btns">
+            <button class="btn-cta" onclick="FreshBite.navigate('menu')">Explore Full Menu →</button>
+            <button class="btn-cta-secondary" onclick="FreshBite.navigate('restaurants')">Top Indian Kitchens</button>
+          </div>
+        </div>
+        <div class="hero-img-wrap">
+          <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=700&q=80" alt="Indian Food Feast">
+        </div>
+      </div>
+
+      <!-- Special Offers & Promo Strips (in ₹) -->
+      <div class="promo-strip">
+        <div class="promo-card">
+          <div>
+            <div class="promo-tag">🏷️ 50% OFF (UP TO ₹150)</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-top:2px;">Use code on royal Indian meals above ₹299</p>
+          </div>
+          <button class="promo-code-btn" onclick="FreshBite.quickApplyPromo('FRESH50')">Apply FRESH50</button>
+        </div>
+        <div class="promo-card">
+          <div>
+            <div class="promo-tag">🎉 FLAT 20% OFF</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-top:2px;">Special festive offer on orders above ₹199</p>
+          </div>
+          <button class="promo-code-btn" onclick="FreshBite.quickApplyPromo('BITE20')">Apply BITE20</button>
+        </div>
+        <div class="promo-card">
+          <div>
+            <div class="promo-tag">🍛 FLAT ₹100 OFF</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-top:2px;">Mega feast discount on orders above ₹499</p>
+          </div>
+          <button class="promo-code-btn" onclick="FreshBite.quickApplyPromo('DESI100')">Apply DESI100</button>
+        </div>
+      </div>
+
+      <!-- Chef's Featured Specialties -->
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Chef's Signature Indian Delicacies</h2>
+          <p class="section-subtitle">Handcrafted dishes loved by foodies across Bengaluru, Delhi, and Mumbai</p>
+        </div>
+        <button class="btn-cta-secondary" style="color:var(--text-brown);" onclick="FreshBite.navigate('menu')">View All Dishes →</button>
+      </div>
+      <div id="featuredDishesGrid" class="grid-cards"></div>
+    </section>
+
+    <!-- 2. RESTAURANTS VIEW -->
+    <section id="view-restaurants" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Iconic Partner Kitchens & Dhabas</h2>
+          <p class="section-subtitle">Curated heritage kitchens committed to authentic regional tastes</p>
+        </div>
+      </div>
+      <div id="restaurantsGrid" class="grid-cards"></div>
+    </section>
+
+    <!-- 3. FOOD MENU VIEW -->
+    <section id="view-menu" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Master Indian Food Menu</h2>
+          <p class="section-subtitle">Explore pure vegetarian, non-vegetarian, vegan, and gluten-free delicacies</p>
+        </div>
+        <!-- Real-time Search Box -->
+        <div class="search-box">
+          <span class="search-icon-pos">🔍</span>
+          <input type="text" id="menuSearchInput" placeholder="Search dishes or spices (e.g. Biryani, Butter Chicken, Dosa, Paneer)...">
+        </div>
+      </div>
+
+      <!-- Dietary Filter System (Bonus Requirement) -->
+      <div style="margin-bottom:0.75rem;">
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.4rem;">Dietary Preferences:</span>
+        <div class="filter-bar">
+          <button class="filter-chip dietary-filter-chip active" data-diet="all">🍽️ All Diets</button>
+          <button class="filter-chip dietary-filter-chip" data-diet="veg">🥬 Pure Vegetarian (Shakahari)</button>
+          <button class="filter-chip dietary-filter-chip" data-diet="non-veg">🍗 Non-Vegetarian (Mansaahari)</button>
+          <button class="filter-chip dietary-filter-chip" data-diet="vegan">🌱 100% Vegan</button>
+          <button class="filter-chip dietary-filter-chip" data-diet="gluten-free">🌾 Gluten-Free</button>
+        </div>
+      </div>
+
+      <!-- Indian Cuisine Category Filter Pills -->
+      <div style="margin-bottom:1.5rem;">
+        <span style="font-size:0.85rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.4rem;">Regional Categories:</span>
+        <div class="filter-bar">
+          <button class="filter-chip cat-filter-chip active" data-cat="all">All Specialties</button>
+          <button class="filter-chip cat-filter-chip" data-cat="biryani">🥘 Dum Biryani & Pulao</button>
+          <button class="filter-chip cat-filter-chip" data-cat="punjabi">🍗 Punjabi & Butter Chicken</button>
+          <button class="filter-chip cat-filter-chip" data-cat="south-indian">🥞 South Indian Tiffin & Dosa</button>
+          <button class="filter-chip cat-filter-chip" data-cat="mughlai">🍢 Awadhi & Royal Kebabs</button>
+          <button class="filter-chip cat-filter-chip" data-cat="street-food">🥟 Delhi Chaat & Pav Bhaji</button>
+          <button class="filter-chip cat-filter-chip" data-cat="sweets">🍮 Desi Mithai & Sweets</button>
+        </div>
+      </div>
+
+      <!-- Menu Dishes Grid -->
+      <div id="menuDishesGrid" class="grid-cards"></div>
+    </section>
+
+    <!-- 4. ABOUT US VIEW -->
+    <section id="view-about" class="view-section">
+      <div class="hero-banner" style="margin-bottom:2rem;">
+        <div>
+          <span class="hero-badge">📖 The FreshBite India Journey</span>
+          <h1 class="hero-title" style="font-size:2.3rem;">Celebrating <span>Indian Culinary Heritage</span>.</h1>
+          <p class="hero-desc">From the aromatic galouti kebabs of Lucknow to the crispy ghee podi dosas of Tamil Nadu and slow-cooked earthen pot biryanis of Hyderabad, FreshBite brings India's most celebrated heritage recipes to your dining table in 25 minutes.</p>
+        </div>
+        <div class="hero-img-wrap">
+          <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=700&q=80" alt="Indian Culinary Team">
+        </div>
+      </div>
+
+      <h2 class="section-title" style="margin-bottom:1.25rem;">Celebrated Master Chefs of India</h2>
+      <div id="aboutTeamGrid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px,1fr));gap:1.5rem;margin-bottom:3rem;"></div>
+
+      <h2 class="section-title" style="margin-bottom:1.25rem;">Prestigious Culinary Honors</h2>
+      <div id="aboutAwardsGrid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px,1fr));gap:1.5rem;"></div>
+    </section>
+
+    <!-- 5. CONTACT US VIEW -->
+    <section id="view-contact" class="view-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Get in Touch With FreshBite India</h2>
+          <p class="section-subtitle">24/7 dedicated customer care across all metro cities in India</p>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:2rem;">
+        <!-- Contact Form -->
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:2rem;box-shadow:var(--shadow-sm);">
+          <h3 style="margin-bottom:1.25rem;">Send Us a Message</h3>
+          <form id="contactForm">
+            <div class="form-group">
+              <label>Your Full Name</label>
+              <input type="text" required placeholder="e.g. Priya Sharma">
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" required placeholder="priya.sharma@example.com">
+            </div>
+            <div class="form-group">
+              <label>Phone Number (India)</label>
+              <input type="tel" required placeholder="+91 98765 43210">
+            </div>
+            <div class="form-group">
+              <label>Inquiry Type</label>
+              <select>
+                <option>Order Delivery & Live Tracking Support</option>
+                <option>Restaurant Onboarding & Partnership</option>
+                <option>Party Catering & Corporate Bulk Meals</option>
+                <option>Customer Feedback & Suggestions</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Your Message</label>
+              <textarea rows="3" required placeholder="How can our culinary concierge help you today?"></textarea>
+            </div>
+            <button type="submit" class="btn-cta" style="width:100%;">Submit Inquiry →</button>
+          </form>
+        </div>
+
+        <!-- Location & Hours Info (Indian Cities) -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.5rem;box-shadow:var(--shadow-sm);">
+            <h4 style="font-size:1.1rem;margin-bottom:0.75rem;">📍 Indian Headquarters</h4>
+            <p style="color:var(--text-muted);font-size:0.92rem;line-height:1.6;">FreshBite India Culinary Towers, 5th Floor<br>100 Feet Road, HAL 2nd Stage, Indiranagar<br>Bengaluru, Karnataka — 560038</p>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.5rem;box-shadow:var(--shadow-sm);">
+            <h4 style="font-size:1.1rem;margin-bottom:0.75rem;">⏰ Kitchen Operational Hours</h4>
+            <p style="color:var(--text-muted);font-size:0.92rem;line-height:1.6;">All 7 Days: <strong>08:30 AM – 02:00 AM (Late Night)</strong><br>Express Helpline: <strong>+91 (080) 4123-5678</strong><br>WhatsApp Support: <strong>+91 98765 43210</strong></p>
+          </div>
+
+          <div style="background:var(--primary-light);border:1px dashed var(--primary);border-radius:var(--radius-md);padding:1.5rem;">
+            <h4 style="color:var(--primary-hover);font-size:1rem;margin-bottom:0.4rem;">🇮🇳 100% Indian Ingredients & Pure Desi Ghee</h4>
+            <p style="font-size:0.85rem;color:var(--text-brown);">All our kitchens use FSSAI-certified ingredients, cold-pressed oils, and farm-fresh paneer and poultry.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS & DRAWERS ==================== -->
+
+  <!-- 1. PRODUCT DETAIL MODAL -->
+  <div id="productModal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="FreshBite.closeModal('productModal')">✕</button>
+      <div id="productModalContent"></div>
+    </div>
+  </div>
+
+  <!-- 2. SHOPPING CART DRAWER (In ₹) -->
+  <div id="cartOverlay" class="cart-overlay" onclick="FreshBite.closeCart()"></div>
+  <div id="cartDrawer" class="cart-drawer">
+    <div class="cart-header">
+      <h3 style="font-size:1.25rem;">Aapki Thaali (Cart) 🛒</h3>
+      <button class="modal-close-btn" style="position:static;" onclick="FreshBite.closeCart()">✕</button>
+    </div>
+    <div id="cartDrawerBody" class="cart-body"></div>
+    <div id="cartDrawerFooter" class="cart-footer">
+      <!-- Dynamic Promo Code Container (Input + Quick Chips OR Active Coupon Badge) -->
+      <div id="cartPromoContainer"></div>
+
+      <!-- Bill Breakdown in ₹ -->
+      <div style="font-size:0.9rem;margin-bottom:0.4rem;display:flex;justify-content:space-between;">
+        <span>Item Subtotal:</span>
+        <strong id="cartSubtotal">₹0</strong>
+      </div>
+      <div style="font-size:0.9rem;margin-bottom:0.4rem;display:flex;justify-content:space-between;color:var(--success);">
+        <span>Voucher Discount:</span>
+        <strong id="cartDiscount">₹0</strong>
+      </div>
+      <div id="cartCreditsRow" style="font-size:0.9rem;margin-bottom:0.4rem;display:none;justify-content:space-between;color:#D97706;font-weight:700;">
+        <span>🪙 FreshCredits Discount:</span>
+        <strong id="cartCreditsDiscount">-₹0</strong>
+      </div>
+      <div style="font-size:0.9rem;margin-bottom:0.8rem;display:flex;justify-content:space-between;color:var(--text-muted);">
+        <span>GST (5%) & Rider Tip:</span>
+        <span>Included (₹30)</span>
+      </div>
+      <div style="font-size:1.2rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:0.75rem;margin-bottom:1.25rem;">
+        <strong>Total Amount:</strong>
+        <strong id="cartTotal" style="color:var(--primary-hover);">₹0</strong>
+      </div>
+
+      <button class="btn-cta" style="width:100%;" onclick="FreshBite.openCheckout()">Proceed to Checkout →</button>
+    </div>
+  </div>
+
+  <!-- 3. CHECKOUT MODAL (In ₹ & Indian Payment Methods) -->
+  <div id="checkoutModal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="FreshBite.closeModal('checkoutModal')">✕</button>
+      <h2 style="font-size:1.5rem;margin-bottom:1.25rem;">Secure Checkout</h2>
+
+      <!-- Delivery Address Selection (Indian Addresses) -->
+      <div class="form-group">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+          <label style="margin-bottom:0;">Select Delivery Address</label>
+          <button type="button" class="coupon-chip" style="font-size:0.75rem;padding:0.2rem 0.6rem;" onclick="FreshBite.toggleNewAddressForm()">➕ Add New Address</button>
+        </div>
+        <select id="checkoutAddressSelect" onchange="FreshBite.onAddressSelectChange(this.value)">
+          <option>🏠 Home — Flat 402, Prestige Shantiniketan, Whitefield, Bengaluru</option>
+          <option>🏢 Office — DLF Cyber City, Building 10, Gurugram, NCR</option>
+          <option value="ADD_NEW">➕ Add New Delivery Address...</option>
+        </select>
+
+        <!-- Inline Add New Address Form -->
+        <div id="inlineAddressFormWrap" style="display:none;margin-top:0.6rem;background:var(--bg-cream);padding:0.85rem;border-radius:var(--radius-md);border:1.5px solid var(--border);">
+          <strong style="display:block;font-size:0.85rem;color:var(--text-brown);margin-bottom:0.5rem;">📍 Add New Delivery Address</strong>
+          <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem;">
+            <button type="button" class="coupon-chip address-tag-btn active" data-tag="🏠 Home" onclick="FreshBite.selectAddressTag(this, '🏠 Home')">🏠 Home</button>
+            <button type="button" class="coupon-chip address-tag-btn" data-tag="🏢 Office" onclick="FreshBite.selectAddressTag(this, '🏢 Office')">🏢 Office</button>
+            <button type="button" class="coupon-chip address-tag-btn" data-tag="🌟 Other" onclick="FreshBite.selectAddressTag(this, '🌟 Other')">🌟 Other</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-bottom:0.4rem;">
+            <input type="text" id="newAddressFlat" placeholder="Flat / House / Wing No." style="padding:0.45rem 0.6rem;font-size:0.82rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:#fff;">
+            <input type="text" id="newAddressArea" placeholder="Apartment / Street / Area" style="padding:0.45rem 0.6rem;font-size:0.82rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:#fff;">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-bottom:0.6rem;">
+            <input type="text" id="newAddressCity" placeholder="City (e.g. Bengaluru)" value="Bengaluru" style="padding:0.45rem 0.6rem;font-size:0.82rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:#fff;">
+            <input type="text" id="newAddressPincode" placeholder="PIN Code (6 digits)" value="560100" maxlength="6" style="padding:0.45rem 0.6rem;font-size:0.82rem;border:1px solid var(--border);border-radius:var(--radius-sm);background:#fff;">
+          </div>
+          <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
+            <button type="button" class="btn-cta-secondary" style="padding:0.35rem 0.8rem;font-size:0.78rem;color:var(--text-brown);" onclick="FreshBite.toggleNewAddressForm(false)">Cancel</button>
+            <button type="button" class="btn-cta" style="padding:0.35rem 0.9rem;font-size:0.78rem;" onclick="FreshBite.saveNewAddress()">Save & Deliver Here</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Time Scheduling (Multiple Slots + Custom Time) -->
+      <div class="form-group">
+        <label>Select Delivery Time</label>
+        <div class="time-slot-grid">
+          <div class="slot-card active" data-slot="⚡ Lightning Express (25-35 min)" onclick="FreshBite.selectDeliverySlot('⚡ Lightning Express (25-35 min)')">
+            <strong>⚡ Express ASAP</strong>
+            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">In 25–35 minutes</p>
+          </div>
+          <div class="slot-card" data-slot="🍱 Lunch Slot (12:30 PM - 2:00 PM)" onclick="FreshBite.selectDeliverySlot('🍱 Lunch Slot (12:30 PM - 2:00 PM)')">
+            <strong>🍱 Lunch Slot</strong>
+            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">12:30 PM – 2:00 PM</p>
+          </div>
+          <div class="slot-card" data-slot="☕ Evening Snacks (4:30 PM - 6:00 PM)" onclick="FreshBite.selectDeliverySlot('☕ Evening Snacks (4:30 PM - 6:00 PM)')">
+            <strong>☕ Evening Snacks</strong>
+            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">4:30 PM – 6:00 PM</p>
+          </div>
+          <div class="slot-card" data-slot="🌆 Dinner Slot (8:00 PM - 9:30 PM)" onclick="FreshBite.selectDeliverySlot('🌆 Dinner Slot (8:00 PM - 9:30 PM)')">
+            <strong>🌆 Dinner Slot</strong>
+            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">8:00 PM – 9:30 PM</p>
+          </div>
+          <div class="slot-card" data-slot="custom" onclick="FreshBite.selectDeliverySlot('custom')">
+            <strong>🕒 Custom Time</strong>
+            <p style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">Pick exact time</p>
+          </div>
+        </div>
+
+        <!-- Custom Exact Time Picker (Enforces min 30 min preparation & delivery) -->
+        <div id="customTimePickerWrap" style="margin-top:0.6rem;display:none;background:var(--bg-cream);padding:0.85rem;border-radius:var(--radius-md);border:1.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;flex-wrap:wrap;gap:0.4rem;">
+            <label style="font-size:0.82rem;font-weight:700;color:var(--text-brown);margin-bottom:0;">Pick Exact Delivery Time Today:</label>
+            <span id="customTimeEarliestBadge" style="font-size:0.75rem;background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:var(--radius-pill);font-weight:700;border:1px solid #FDE68A;">Min 30 min required</span>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.6rem;">
+            <input type="time" id="customDeliveryTimeInput" style="padding:0.55rem 0.85rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;font-weight:700;font-size:1.05rem;color:var(--text-brown);" onchange="FreshBite.onCustomTimeChange(this.value)">
+            <span style="font-size:0.78rem;color:var(--text-muted);line-height:1.3;">⚠️ Fresh cooking & rider delivery requires at least <strong>30 minutes</strong>.</span>
+          </div>
+
+          <!-- Quick Offset Shortcut Chips -->
+          <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+            <button type="button" class="coupon-chip" onclick="FreshBite.setCustomDeliveryOffset(30)">⚡ +30 min (Earliest)</button>
+            <button type="button" class="coupon-chip" onclick="FreshBite.setCustomDeliveryOffset(45)">🍱 +45 min</button>
+            <button type="button" class="coupon-chip" onclick="FreshBite.setCustomDeliveryOffset(60)">☕ +1 Hour</button>
+            <button type="button" class="coupon-chip" onclick="FreshBite.setCustomDeliveryOffset(120)">🌆 +2 Hours</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Payment Simulation (UPI, RuPay, COD) -->
+      <div class="form-group">
+        <label>Select Payment Method</label>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+          <button type="button" class="filter-chip payment-tab-btn active" data-method="upi" style="flex:1;justify-content:center;" onclick="FreshBite.selectPaymentMethod('upi')">📱 UPI / QR</button>
+          <button type="button" class="filter-chip payment-tab-btn" data-method="card" style="flex:1;justify-content:center;" onclick="FreshBite.selectPaymentMethod('card')">💳 RuPay / Card</button>
+          <button type="button" class="filter-chip payment-tab-btn" data-method="cod" style="flex:1;justify-content:center;" onclick="FreshBite.selectPaymentMethod('cod')">💵 Cash on Delivery</button>
+        </div>
+
+        <!-- 1. UPI / QR Payment View -->
+        <div id="payContentUPI" class="payment-content-view">
+          <div style="background:var(--primary-light);border:1.5px dashed var(--primary);border-radius:var(--radius-md);padding:1rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:1rem;">
+            <div style="font-size:2.4rem;background:#fff;padding:0.4rem;border-radius:var(--radius-sm);border:1px solid var(--border);">📲</div>
+            <div>
+              <strong style="color:var(--text-brown);font-size:0.95rem;display:block;">Instant UPI Auto-Pay</strong>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">Supports Google Pay, PhonePe, Paytm, BHIM & CRED</p>
+            </div>
+          </div>
+          <div style="margin-bottom:0.5rem;">
+            <label style="font-size:0.82rem;font-weight:600;margin-bottom:0.25rem;display:block;">Enter UPI ID (VPA):</label>
+            <input type="text" id="upiIdInput" placeholder="e.g. priya@okhdfcbank" value="priya.sharma@okaxis" style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:var(--radius-sm);">
+          </div>
+        </div>
+
+        <!-- 2. RuPay / Debit Card View -->
+        <div id="payContentCard" class="payment-content-view" style="display:none;">
+          <!-- 3D Card Simulation (RuPay) -->
+          <div class="card-sim-wrap">
+            <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#AAA;">
+              <span>STATE BANK OF INDIA</span>
+              <span style="font-weight:800;color:#FF6B35;">RuPay Platinum</span>
+            </div>
+            <div class="card-sim-number" id="cardPreviewNumber">•••• •••• •••• 5521</div>
+            <div class="card-sim-bottom">
+              <span id="cardPreviewName">PRIYA SHARMA</span>
+              <span id="cardPreviewExp">EXP 08/29</span>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.5rem;">
+            <input type="text" id="cardNumberInput" placeholder="Card Number (16 digits)" value="5081 2944 8832 5521" maxlength="19" oninput="FreshBite.onCardInput(this.value)">
+            <input type="text" id="cardHolderInput" placeholder="Cardholder Name" value="Priya Sharma" oninput="document.getElementById('cardPreviewName').textContent = this.value.toUpperCase() || 'NAME'">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+            <input type="text" id="cardExpiryInput" placeholder="MM/YY" value="08/29" maxlength="5">
+            <input type="password" id="cardCvvInput" placeholder="CVV" value="782" maxlength="3">
+          </div>
+        </div>
+
+        <!-- 3. Cash on Delivery View -->
+        <div id="payContentCOD" class="payment-content-view" style="display:none;">
+          <div style="background:#F0FDF4;border:1.5px solid #86EFAC;border-radius:var(--radius-md);padding:1.25rem;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:0.5rem;">💵</div>
+            <h4 style="color:#166534;margin-bottom:0.25rem;">Cash on Delivery (COD) Selected</h4>
+            <p style="font-size:0.85rem;color:#374151;line-height:1.5;">Pay with cash or scan QR on arrival with courier partner <strong>Vikram Sharma</strong>. No advance online payment needed.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Checkout Order & Coupon Summary -->
+      <div id="checkoutBillSummaryWrap" style="margin-top:1.25rem;margin-bottom:1rem;"></div>
+
+      <button id="placeOrderSubmitBtn" class="btn-cta" style="width:100%;margin-top:0.75rem;" onclick="FreshBite.placeOrder()">Pay via UPI & Track Live (Vikram Sharma 🛵)</button>
+    </div>
+  </div>
+
+  <!-- 4. LIVE ORDER TRACKING MODAL (Bonus Requirement) -->
+  <div id="trackingModal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="FreshBite.closeModal('trackingModal')">✕</button>
+      <div id="trackingModalContent"></div>
+    </div>
+  </div>
+
+  <!-- 5. USER ACCOUNT MODAL -->
+  <div id="accountModal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="FreshBite.closeModal('accountModal')">✕</button>
+      
+      <!-- Account Tabs -->
+      <div style="display:flex;gap:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.75rem;margin-bottom:1.25rem;overflow-x:auto;">
+        <button class="filter-chip account-tab-btn active" data-tab="profile" onclick="FreshBite.switchAccountTab('profile')">Profile</button>
+        <button class="filter-chip account-tab-btn" data-tab="credits" onclick="FreshBite.switchAccountTab('credits')">FreshCredits 🪙</button>
+        <button class="filter-chip account-tab-btn" data-tab="orders" onclick="FreshBite.switchAccountTab('orders')">Order History</button>
+        <button class="filter-chip account-tab-btn" data-tab="addresses" onclick="FreshBite.switchAccountTab('addresses')">Addresses 📍</button>
+        <button class="filter-chip account-tab-btn" data-tab="wishlist" onclick="FreshBite.switchAccountTab('wishlist')">Wishlist ❤️</button>
+      </div>
+
+      <div id="accountModalBody"></div>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="brand-logo" style="margin-bottom:0.75rem;color:#fff;">
+            <div class="brand-icon">🍛</div>
+            <span>Fresh<span class="bite">Bite</span> INDIA</span>
+          </div>
+          <p style="font-size:0.88rem;line-height:1.6;color:#BCAAA4;">Crafting exceptional Indian culinary experiences, delivered piping hot to your doorstep. Pure HTML5, CSS3 & JavaScript frontend application.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="javascript:void(0)" onclick="FreshBite.navigate('home')">Home Page</a></li>
+            <li><a href="javascript:void(0)" onclick="FreshBite.navigate('restaurants')">Partner Dhabas & Kitchens</a></li>
+            <li><a href="javascript:void(0)" onclick="FreshBite.navigate('menu')">Master Indian Menu</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Indian Specialties</h4>
+          <ul class="footer-links">
+            <li>Hyderabadi Chicken Dum Biryani</li>
+            <li>Classic Murgh Makhani</li>
+            <li>Mysore Ghee Masala Dosa</li>
+            <li>Delhi Pindi Chole Bhature</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Internship Track</h4>
+          <ul class="footer-links">
+            <li>Frontend Web Development</li>
+            <li>Pure HTML5 / CSS3 / ES6 JS</li>
+            <li>Zero Database / In-Memory State</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 FreshBite India. Frontend Web Development Internship Project.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MOBILE BOTTOM NAVIGATION DOCK ==================== -->
+  <nav class="mobile-dock">
+    <button class="dock-item active" data-view="home" onclick="FreshBite.navigate('home')">
+      <span>🏠</span>
+      <span>Home</span>
+    </button>
+    <button class="dock-item" data-view="restaurants" onclick="FreshBite.navigate('restaurants')">
+      <span>🍴</span>
+      <span>Kitchens</span>
+    </button>
+    <button class="dock-item" data-view="menu" onclick="FreshBite.navigate('menu')">
+      <span>🍛</span>
+      <span>Menu</span>
+    </button>
+    <button class="dock-item" onclick="FreshBite.openCart()">
+      <span>🛒</span>
+      <span>Cart</span>
+    </button>
+    <button class="dock-item" onclick="FreshBite.openAccount('profile')">
+      <span>👤</span>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <!-- Main JavaScript File -->
+  <script src="script.js"></script>
+</body>
+</html>
