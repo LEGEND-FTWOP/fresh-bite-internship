@@ -277,7 +277,7 @@
       <button class="modal-close-btn" style="position:static;" onclick="FreshBite.closeCart()">✕</button>
     </div>
     <div id="cartDrawerBody" class="cart-body"></div>
-    <div id="cartDrawerFooter" class="cart-footer">
+    <div id="cartDrawerFooter" class="cart-footer" style="display:none;">
       <!-- Dynamic Promo Code Container (Input + Quick Chips OR Active Coupon Badge) -->
       <div id="cartPromoContainer"></div>
 
@@ -320,8 +320,8 @@
           <button type="button" class="coupon-chip" style="font-size:0.75rem;padding:0.2rem 0.6rem;" onclick="FreshBite.toggleNewAddressForm()">➕ Add New Address</button>
         </div>
         <select id="checkoutAddressSelect" onchange="FreshBite.onAddressSelectChange(this.value)">
-          <option>🏠 Home — Flat 402, Prestige Shantiniketan, Whitefield, Bengaluru</option>
-          <option>🏢 Office — DLF Cyber City, Building 10, Gurugram, NCR</option>
+          <option value="🏠 Home — Flat 402, Prestige Shantiniketan, Whitefield, Bengaluru - 560066">🏠 Home — Flat 402, Prestige Shantiniketan, Whitefield, Bengaluru - 560066</option>
+          <option value="🏢 Office — DLF Cyber City, Building 10, Gurugram, NCR - 122002">🏢 Office — DLF Cyber City, Building 10, Gurugram, NCR - 122002</option>
           <option value="ADD_NEW">➕ Add New Delivery Address...</option>
         </select>
 

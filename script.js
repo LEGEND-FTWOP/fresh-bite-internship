@@ -282,11 +282,67 @@ const AWARDS = [
   { year: '2023', title: 'Fastest 25-Min Hot Food Delivery Award', org: 'Zomato Foodie Summit' }
 ];
 
+// Address Sanitization & Formatting Helpers
+const DEFAULT_ADDRESSES = [
+  '🏠 Home — Flat 402, Prestige Shantiniketan, Whitefield, Bengaluru - 560066',
+  '🏢 Office — DLF Cyber City, Building 10, Gurugram, NCR - 122002'
+];
+
+const sanitizeAddress = addr => {
+  if (!addr) return '';
+  if (typeof addr === 'string') {
+    const trimmed = addr.trim();
+    if (trimmed === '[object Object]' || trimmed.toLowerCase().includes('[object object]') || trimmed === '') {
+      return '';
+    }
+    return trimmed;
+  }
+  if (typeof addr === 'object') {
+    const tag = addr.tag || addr.type || addr.label || '🏠 Home';
+    if (typeof addr.fullAddress === 'string' && addr.fullAddress && !addr.fullAddress.includes('[object')) {
+      return addr.fullAddress.includes('—') ? addr.fullAddress : `${tag} — ${addr.fullAddress}`;
+    }
+    if (typeof addr.address === 'string' && addr.address && !addr.address.includes('[object')) {
+      return addr.address.includes('—') ? addr.address : `${tag} — ${addr.address}`;
+    }
+    const flat = addr.flat || addr.house || addr.houseNo || addr.flatNo || addr.line1 || '';
+    const area = addr.area || addr.street || addr.locality || addr.line2 || '';
+    const city = addr.city || '';
+    const pin = addr.pincode || addr.pin || addr.zip || '';
+    const parts = [];
+    if (flat) parts.push(flat);
+    if (area) parts.push(area);
+    if (city && pin) parts.push(`${city} - ${pin}`);
+    else if (city) parts.push(city);
+    else if (pin) parts.push(pin);
+    if (parts.length > 0) {
+      return `${tag} — ${parts.join(', ')}`;
+    }
+    return '';
+  }
+  return '';
+};
+
+const normalizeAddresses = addrs => {
+  if (!Array.isArray(addrs)) {
+    if (addrs && typeof addrs === 'object') {
+      const single = sanitizeAddress(addrs);
+      return single ? [single, DEFAULT_ADDRESSES[1]] : [...DEFAULT_ADDRESSES];
+    }
+    return [...DEFAULT_ADDRESSES];
+  }
+  const cleaned = addrs.map(sanitizeAddress).filter(a => Boolean(a) && a !== '[object Object]');
+  return cleaned.length > 0 ? cleaned : [...DEFAULT_ADDRESSES];
+};
+
 // 2. CENTRAL APPLICATION STATE
 const AppState = {
-  cart: getStorage('freshbite_cart', []),
-  wishlist: getStorage('freshbite_wishlist', ['dish-1', 'dish-2']),
-  orders: getStorage('freshbite_orders', []),
+  cart: Array.isArray(getStorage('freshbite_cart', [])) ? getStorage('freshbite_cart', []) : [],
+  wishlist: Array.isArray(getStorage('freshbite_wishlist', ['dish-1', 'dish-2'])) ? getStorage('freshbite_wishlist', ['dish-1', 'dish-2']) : ['dish-1', 'dish-2'],
+  orders: Array.isArray(getStorage('freshbite_orders', [])) ? getStorage('freshbite_orders', []).map(o => ({
+    ...o,
+    deliveryAddress: sanitizeAddress(o.deliveryAddress) || DEFAULT_ADDRESSES[0]
+  })) : [],
   appliedPromo: null,
   appliedCredits: 0,
   selectedAddressTag: '🏠 Home',
@@ -297,10 +353,7 @@ const AppState = {
     email: 'priya.sharma@freshbite.in',
     phone: '+91 98765 43210',
     credits: getStorage('freshbite_credits', 250),
-    addresses: getStorage('freshbite_addresses', [
-      '🏠 Home — Flat 402, Prestige Shantiniketan, Whitefield, Bengaluru - 560066',
-      '🏢 Office — DLF Cyber City, Building 10, Gurugram, NCR - 122002'
-    ])
+    addresses: normalizeAddresses(getStorage('freshbite_addresses', DEFAULT_ADDRESSES))
   },
   currentView: 'home',
   dietaryFilter: 'all',
@@ -319,8 +372,14 @@ const AppState = {
 // 3. MAIN CONTROLLER
 const FreshBite = {
   init() {
+    // Sanitize state loaded from storage to fix any previous corrupted data
+    AppState.user.addresses = normalizeAddresses(AppState.user.addresses);
+    AppState.selectedAddress = sanitizeAddress(AppState.selectedAddress) || AppState.user.addresses[0] || DEFAULT_ADDRESSES[0];
+    this.saveState();
+
     this.bindEvents();
     this.updateBadges();
+    this.renderCart();
     this.populateCheckoutAddresses();
     this.renderHome();
     this.renderRestaurants();
@@ -573,16 +632,23 @@ const FreshBite = {
       </div>
     `;
     modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
   },
 
   // Cart Management
   openCart() {
     this.renderCart();
     $('cartDrawer')?.classList.add('active');
+    $('cartOverlay')?.classList.add('active');
+    document.body.style.overflow = 'hidden';
   },
 
   closeCart() {
     $('cartDrawer')?.classList.remove('active');
+    $('cartOverlay')?.classList.remove('active');
+    if (!$$('.modal-overlay.active').length) {
+      document.body.style.overflow = '';
+    }
   },
 
   addToCart(dishId) {
@@ -630,17 +696,17 @@ const FreshBite = {
   },
 
   renderCart() {
-    const body = $('cartItemsContainer');
-    const footer = $('cartFooter');
+    const body = $('cartDrawerBody') || $('cartItemsContainer');
+    const footer = $('cartDrawerFooter') || $('cartFooter');
     if (!body) return;
 
     if (!AppState.cart.length) {
       body.innerHTML = `
         <div style="text-align:center;padding:3rem 1rem;">
           <div style="font-size:3.5rem;margin-bottom:0.75rem;">🍱</div>
-          <h3>Your cart is empty</h3>
-          <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.4rem;">Explore authentic Indian delicacies and add items!</p>
-          <button class="btn-cta" style="margin-top:1.25rem;" onclick="FreshBite.closeCart(); FreshBite.navigate('menu');">Explore Dishes</button>
+          <h3 style="font-size:1.3rem;margin-bottom:0.4rem;color:var(--text-brown);">Your cart is empty</h3>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.4rem;line-height:1.5;">Explore authentic Indian delicacies and add items to your thaali!</p>
+          <button class="btn-cta" style="margin-top:1.25rem;" onclick="FreshBite.closeCart(); FreshBite.navigate('menu');">Explore Dishes 🍛</button>
         </div>
       `;
       if (footer) footer.style.display = 'none';
@@ -669,7 +735,7 @@ const FreshBite = {
     `).join('');
 
     const bill = this.getBillDetails();
-    const promoBox = $('cartPromoSection');
+    const promoBox = $('cartPromoContainer') || $('cartPromoSection');
     if (promoBox) {
       if (AppState.appliedPromo) {
         promoBox.innerHTML = `
@@ -778,28 +844,40 @@ const FreshBite = {
   populateCheckoutAddresses() {
     const select = $('checkoutAddressSelect');
     if (!select) return;
-    if (!AppState.user.addresses?.length) {
-      AppState.user.addresses = [
-        '🏠 Home — Flat 402, Prestige Shantiniketan, Whitefield, Bengaluru - 560066',
-        '🏢 Office — DLF Cyber City, Building 10, Gurugram, NCR - 122002'
-      ];
+    
+    AppState.user.addresses = normalizeAddresses(AppState.user.addresses);
+    AppState.selectedAddress = sanitizeAddress(AppState.selectedAddress);
+    if (!AppState.selectedAddress || !AppState.user.addresses.includes(AppState.selectedAddress)) {
+      AppState.selectedAddress = AppState.user.addresses[0] || DEFAULT_ADDRESSES[0];
     }
-    select.innerHTML = AppState.user.addresses.map(a => 
-      `<option value="${a}" ${AppState.selectedAddress === a ? 'selected' : ''}>${a}</option>`
-    ).join('') + `<option value="ADD_NEW">➕ Add New Delivery Address...</option>`;
 
-    if (!AppState.selectedAddress && AppState.user.addresses.length > 0) {
-      AppState.selectedAddress = AppState.user.addresses[0];
-    }
+    select.innerHTML = AppState.user.addresses.map(a => {
+      const clean = sanitizeAddress(a);
+      const isSelected = AppState.selectedAddress === clean;
+      return `<option value="${clean.replace(/"/g, '&quot;')}" ${isSelected ? 'selected' : ''}>${clean}</option>`;
+    }).join('') + `<option value="ADD_NEW">➕ Add New Delivery Address...</option>`;
   },
 
   onAddressSelectChange(val) {
     if (val === 'ADD_NEW') {
       this.toggleNewAddressForm(true);
     } else {
-      AppState.selectedAddress = val;
+      const clean = sanitizeAddress(val) || AppState.user.addresses[0] || DEFAULT_ADDRESSES[0];
+      AppState.selectedAddress = clean;
       this.toggleNewAddressForm(false);
-      this.showToast(`Selected: ${val.split('—')[0] || 'Address'} 📍`);
+      const tagLabel = clean.split('—')[0]?.trim() || 'Address';
+      this.showToast(`Selected: ${tagLabel} 📍`);
+    }
+  },
+
+  selectSavedAddress(index) {
+    AppState.user.addresses = normalizeAddresses(AppState.user.addresses);
+    if (AppState.user.addresses[index]) {
+      AppState.selectedAddress = AppState.user.addresses[index];
+      this.saveState();
+      this.populateCheckoutAddresses();
+      this.switchAccountTab('addresses');
+      this.showToast('Selected as default address! 📍');
     }
   },
 
@@ -826,7 +904,8 @@ const FreshBite = {
 
   saveNewAddress(fromAccount = false) {
     const tag = AppState.selectedAddressTag || '🏠 Home';
-    const p = fromAccount ? 'accAddress' : 'newAddress';
+    const isAccount = typeof fromAccount === 'boolean' && fromAccount;
+    const p = isAccount ? 'accAddress' : 'newAddress';
     const flat = $(p + 'Flat')?.value?.trim();
     const area = $(p + 'Area')?.value?.trim();
     const city = $(p + 'City')?.value?.trim() || 'Bengaluru';
@@ -835,13 +914,17 @@ const FreshBite = {
     if (!flat || !area) return this.showToast('Please enter Flat/House No. and Street/Area! 📍');
 
     const addr = `${tag} — ${flat}, ${area}, ${city} - ${pin}`;
-    AppState.user.addresses.unshift(addr);
-    AppState.selectedAddress = addr;
+    const cleanAddr = sanitizeAddress(addr);
+    AppState.user.addresses.unshift(cleanAddr);
+    AppState.selectedAddress = cleanAddr;
     this.saveState();
     this.populateCheckoutAddresses();
     this.showToast('New delivery address saved & selected! 📍');
 
-    if (fromAccount) {
+    if ($(p + 'Flat')) $(p + 'Flat').value = '';
+    if ($(p + 'Area')) $(p + 'Area').value = '';
+
+    if (isAccount) {
       this.switchAccountTab('addresses');
     } else {
       this.toggleNewAddressForm(false);
@@ -849,11 +932,12 @@ const FreshBite = {
   },
 
   removeAddress(index) {
-    if (!AppState.user.addresses || AppState.user.addresses.length <= 1) {
+    AppState.user.addresses = normalizeAddresses(AppState.user.addresses);
+    if (AppState.user.addresses.length <= 1) {
       return this.showToast('You must keep at least one saved delivery address.');
     }
     AppState.user.addresses.splice(index, 1);
-    AppState.selectedAddress = AppState.user.addresses[0] || '';
+    AppState.selectedAddress = AppState.user.addresses[0] || DEFAULT_ADDRESSES[0];
     this.saveState();
     this.populateCheckoutAddresses();
     this.switchAccountTab('addresses');
@@ -869,6 +953,7 @@ const FreshBite = {
     this.selectDeliverySlot(AppState.deliverySlot || '⚡ Lightning Express (25-35 min)');
     this.selectPaymentMethod(AppState.paymentMethod || 'upi');
     $('checkoutModal')?.classList.add('active');
+    document.body.style.overflow = 'hidden';
   },
 
   renderCheckoutSummary() {
@@ -1095,7 +1180,16 @@ const FreshBite = {
     AppState.user.credits = Math.max(0, AppState.user.credits - bill.creditsDiscount) + bill.earnCredits;
 
     const selectEl = $('checkoutAddressSelect');
-    const selectedAddr = AppState.selectedAddress || (selectEl && selectEl.value !== 'ADD_NEW' ? selectEl.value : AppState.user.addresses[0]) || '🏠 Home';
+    let selectedAddr = AppState.selectedAddress;
+    if (!selectedAddr || selectedAddr === 'ADD_NEW' || selectedAddr.includes('[object')) {
+      if (selectEl && selectEl.value && selectEl.value !== 'ADD_NEW' && !selectEl.value.includes('[object')) {
+        selectedAddr = selectEl.value;
+      } else {
+        selectedAddr = AppState.user.addresses[0] || DEFAULT_ADDRESSES[0];
+      }
+    }
+    selectedAddr = sanitizeAddress(selectedAddr) || DEFAULT_ADDRESSES[0];
+    AppState.selectedAddress = selectedAddr;
 
     const newOrder = {
       id: 'FB-IN-' + Math.floor(100000 + Math.random() * 900000),
@@ -1135,12 +1229,13 @@ const FreshBite = {
     if (!order || !modal || !container) return;
 
     const partner = AppState.deliveryPartner;
+    const cleanAddress = sanitizeAddress(order.deliveryAddress) || sanitizeAddress(AppState.selectedAddress) || DEFAULT_ADDRESSES[0];
     container.innerHTML = `
       <div style="text-align:center;margin-bottom:1.5rem;">
         <span class="hero-badge">🛵 Order ID: ${order.id}</span>
         <h2 style="font-size:1.6rem;margin-top:0.4rem;">Live Delivery Simulation</h2>
         <p style="color:var(--text-muted);font-size:0.9rem;">Estimated Arrival: <strong>${order.slot}</strong></p>
-        <p style="font-size:0.82rem;color:var(--text-brown);margin-top:2px;">Delivering to: <strong>${order.deliveryAddress || 'Selected Address'}</strong></p>
+        <p style="font-size:0.82rem;color:var(--text-brown);margin-top:2px;">Delivering to: <strong>${cleanAddress}</strong></p>
         ${order.earnedCredits ? `<div style="font-size:0.8rem;color:#92400E;background:#FEF3C7;display:inline-block;padding:2px 10px;border-radius:999px;margin-top:4px;font-weight:700;">🪙 +${order.earnedCredits} FreshCredits Earned</div>` : ''}
       </div>
 
@@ -1168,6 +1263,7 @@ const FreshBite = {
       </div>
     `;
     modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
   },
 
   advanceTrackingStage() {
@@ -1238,6 +1334,7 @@ const FreshBite = {
   openAccount(tab = 'profile') {
     this.switchAccountTab(tab);
     $('accountModal')?.classList.add('active');
+    document.body.style.overflow = 'hidden';
   },
 
   switchAccountTab(tab) {
@@ -1246,7 +1343,7 @@ const FreshBite = {
     if (!body) return;
 
     if (tab === 'profile') {
-      const activeAddress = AppState.selectedAddress || AppState.user.addresses[0] || 'No address saved';
+      const activeAddress = sanitizeAddress(AppState.selectedAddress) || sanitizeAddress(AppState.user.addresses[0]) || DEFAULT_ADDRESSES[0];
       body.innerHTML = `
         <div style="display:flex;align-items:center;gap:1.25rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);">
           <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#E8551E);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.75rem;font-weight:700;">PS</div>
@@ -1363,7 +1460,7 @@ const FreshBite = {
             </div>
 
             <div style="font-size:0.78rem;color:var(--text-brown);margin-bottom:0.6rem;background:#fff;padding:0.4rem 0.6rem;border-radius:4px;border:1px solid var(--border);">
-              📍 Delivered to: <strong>${o.deliveryAddress || 'Selected Address'}</strong>
+              📍 Delivered to: <strong>${sanitizeAddress(o.deliveryAddress) || DEFAULT_ADDRESSES[0]}</strong>
             </div>
 
             <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -1374,7 +1471,8 @@ const FreshBite = {
         `).join('');
       }
     } else if (tab === 'addresses') {
-      const currentSelected = AppState.selectedAddress || AppState.user.addresses[0];
+      AppState.user.addresses = normalizeAddresses(AppState.user.addresses);
+      const currentSelected = sanitizeAddress(AppState.selectedAddress) || AppState.user.addresses[0] || DEFAULT_ADDRESSES[0];
 
       body.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
@@ -1405,10 +1503,11 @@ const FreshBite = {
 
         <div class="address-list-wrap">
           ${AppState.user.addresses.map((addr, idx) => {
-            const isDefault = addr === currentSelected;
-            const parts = addr.split('—');
+            const cleanAddr = sanitizeAddress(addr);
+            const isDefault = cleanAddr === currentSelected;
+            const parts = cleanAddr.split('—');
             const tag = parts[0]?.trim() || '📍 Address';
-            const details = parts[1]?.trim() || addr;
+            const details = parts[1]?.trim() || cleanAddr;
 
             return `
               <div class="address-item-card">
@@ -1421,7 +1520,7 @@ const FreshBite = {
                 </div>
                 <div style="display:flex;flex-direction:column;gap:0.4rem;align-items:flex-end;">
                   ${!isDefault ? `
-                    <button class="coupon-chip" style="font-size:0.75rem;padding:0.25rem 0.6rem;" onclick="AppState.selectedAddress = '${addr.replace(/'/g, "\\'")}'; FreshBite.saveState(); FreshBite.populateCheckoutAddresses(); FreshBite.switchAccountTab('addresses'); FreshBite.showToast('Selected as default address! 📍');">
+                    <button class="coupon-chip" style="font-size:0.75rem;padding:0.25rem 0.6rem;" onclick="FreshBite.selectSavedAddress(${idx})">
                       Select 📍
                     </button>
                   ` : ''}
@@ -1514,6 +1613,9 @@ const FreshBite = {
   // Modals & Notifications
   closeModal(modalId) {
     $(modalId)?.classList.remove('active');
+    if (!$$('.modal-overlay.active, .cart-drawer.active').length) {
+      document.body.style.overflow = '';
+    }
   },
 
   showToast(message) {
@@ -1568,12 +1670,18 @@ const FreshBite = {
       if (e.key === 'Escape') {
         FreshBite.closeCart();
         $$('.modal-overlay').forEach(m => m.classList.remove('active'));
+        document.body.style.overflow = '';
       }
     });
 
     $$('.modal-overlay').forEach(modal => {
       modal.addEventListener('click', e => {
-        if (e.target === modal) modal.classList.remove('active');
+        if (e.target === modal) {
+          modal.classList.remove('active');
+          if (!$$('.modal-overlay.active, .cart-drawer.active').length) {
+            document.body.style.overflow = '';
+          }
+        }
       });
     });
   }

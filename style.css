@@ -30,6 +30,30 @@
   padding: 0;
 }
 
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(45, 27, 18, 0.22);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 27, 18, 0.22) transparent;
+}
+
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--bg-cream);
@@ -937,12 +961,14 @@ input, select, textarea {
   width: 100%;
   max-width: 420px;
   height: 100vh;
+  height: 100dvh;
   background: var(--bg-card);
   box-shadow: -8px 0 35px rgba(0, 0, 0, 0.2);
   z-index: 250;
   transition: right 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .cart-drawer.active {
@@ -950,7 +976,7 @@ input, select, textarea {
 }
 
 .cart-header {
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
@@ -961,6 +987,7 @@ input, select, textarea {
   padding: 1.25rem;
   overflow-y: auto;
   flex: 1;
+  overscroll-behavior: contain;
 }
 
 .cart-footer {
@@ -982,10 +1009,48 @@ input, select, textarea {
   height: 58px;
   border-radius: var(--radius-sm);
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .cart-item-info {
   flex: 1;
+}
+
+.cart-item-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-brown);
+  line-height: 1.3;
+}
+
+.cart-item-price {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.cart-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.35rem;
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+  transition: var(--transition);
+}
+
+.cart-remove-btn:hover {
+  background: #DC2626;
+  color: #fff;
+  transform: scale(1.1);
 }
 
 
